@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Create</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.1/jquery.min.js" integrity="sha512-aVKKRRi/Q/YV+4mjoKBsE4x3H+BkegoM/em46NNlCqNTmUYADjBbeNefNxYV7giUp0VxICtqdrbqU7iVaeZNXA==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+
+</head>
+<body>
+<h2>CREAT CATEGORY</h2>
+<a href="list.html">Back</a>
+<p id="message" style="color: blue;display: none">Create success!</p>
+<table>
+    <tr>
+        <td>Name</td>
+        <td><input type="text" id="name"></td>
+    </tr>
+    <tr>
+        <td>Products</td>
+        <td><input type="text" id="prod" disabled></td>
+    </tr>
+
+
+        <td colspan="2" align="center">
+            <button id="button">Create</button></td>
+    </tr>
+</table>
+
+
+</body>
+<script>
+    $(document).ready(function (){
+        $('#button').click(function (){
+            let categoryCreate = {
+
+                name: $('#name').val(),
+                // products: $('#prod').val()
+
+
+            }
+            console.log(JSON.stringify(categoryCreate))
+            $.ajax({
+                url:'https://threephoneshop.herokuapp.com/api/categories/',
+                method:'POST',
+
+                contentType:'application/Json; charset=UTF-8',
+                data: JSON.stringify(categoryCreate),
+
+                success:function (){
+                    $('#message').show();
+
+                },
+                error: function (){
+                    document.getElementById('create').innerHTML = "Error "
+                }
+            })
+
+
+
+        })
+    })
+</script>
+</html>

@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Edit</title>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.1/jquery.min.js" integrity="sha512-aVKKRRi/Q/YV+4mjoKBsE4x3H+BkegoM/em46NNlCqNTmUYADjBbeNefNxYV7giUp0VxICtqdrbqU7iVaeZNXA==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+
+</head>
+<body>
+<h2>EDIT CATEGORY</h2>
+<a href="list.html"><button>Back</button></a>
+<p id="message" style="color: blue;display: none">Edit success!</p>
+
+
+<table>
+    <tr>
+        <td>Name</td>
+        <td><input type="text" id="name"></td>
+    </tr>
+    <tr>
+        <td>Products</td>
+        <td><input type="text" id="prod" disabled></td>
+    </tr>
+
+
+    <td colspan="2" align="center">
+        <button onclick="editCategory()">Edit</button></td>
+    </tr>
+</table>
+
+
+</body>
+<script>
+    let query = window.location.search;
+    let id = new URLSearchParams(query).get("id");
+    $(document).ready(function (){
+        getCategory();
+
+
+    })
+    function getCategory(){
+        $.ajax({
+            url:'https://threephoneshop.herokuapp.com/api/categories/'+id,
+            method:'GET',
+            contentType:'application/Json; charset=UTF-8',
+            success: function (data){
+                $('#name').val(data.name);
+                // $('#prod').val(data.products);
+
+
+
+            },
+            error: function (){
+                document.getElementById('edit').innerHTML = "Category does not exist!!";
+            }
+        })
+    }
+    function editCategory(){
+        let category = {
+            name: $('#name').val()
+            // products: $('#prod').val(),
+
+        }
+        console.log(category)
+        $.ajax({
+            url:'https://threephoneshop.herokuapp.com/api/categories/'+id,
+            method: 'PUT',
+            data:JSON.stringify(category),
+            contentType:'application/Json; charset=UTF-8',
+            success: function (){
+                $('#message').show();
+
+            },
+            error : function (){
+                alert('Error')
+            }
+        })
+    }
+</script>
+</html>

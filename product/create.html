@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Create</title>
+    <script src="https://www.gstatic.com/firebasejs/4.2.0/firebase.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.1/jquery.min.js" integrity="sha512-aVKKRRi/Q/YV+4mjoKBsE4x3H+BkegoM/em46NNlCqNTmUYADjBbeNefNxYV7giUp0VxICtqdrbqU7iVaeZNXA==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+
+
+
+</head>
+<body>
+<h2>CREAT PRODUCT</h2>
+<a href="list.html">Back</a>
+<p id="message" style="color: blue;display: none">Create success!</p>
+
+<table border="1px" style="width: 80%">
+    <tr>
+        <td>Name</td>
+        <td><input type="text" id="name"></td>
+    </tr>
+    <tr>
+        <td>Price</td>
+        <td><input type="number" id="price"></td>
+    </tr>
+    <tr>
+        <td>Description</td>
+        <td><input type="text" id="desc"></td>
+    </tr>
+    <tr>
+        <td>Manufacturer</td>
+        <td><input type="text" id="manuf"></td>
+    </tr>
+    <tr>
+        <td>Available Quantity</td>
+        <td><input type="number"  id="availableQuantity"></td>
+    </tr>
+    <tr>
+        <td>CATEGORY</td>
+        <td><select name="cars" id="categories"></select></td>
+    </tr>
+    <tr>
+        <td>IMAGE</td>
+        <td><input type="file" value="upload" accept=".jpg" id="img"></td>
+    </tr>
+    <tr><td></td>
+        <td><div id="imgDiv"></div></td>
+    </tr>
+    <tr>
+        <td colspan="2" align="center">
+            <button id="button">Create</button></td>
+    </tr>
+</table>
+<div id="create"></div>
+
+</body>
+<script src="../upload-file/upload-products.js"></script>
+<script>
+    $(document).ready(function (){
+        getCategory();
+        let imgProduct = {};
+        let category = {};
+        $('#button').click(function (){
+            let avatar = resultImage();
+            category.id = JSON.parse($('#categories').val());
+            imgProduct.avatar = avatar;
+            // console.log(category)
+            let productCreate = {
+                name: $('#name').val(),
+                price: $('#price').val(),
+                description: $('#desc').val(),
+                manufacture: $('#manuf').val(),
+                availableQuantity: $('#availableQuantity'),
+                category: category,
+                image: document.getElementById("imgProduct").src
+
+            }
+            console.log(JSON.stringify(productCreate))
+            $.ajax({
+                    url:'http://localhost:8080/api/products/create',
+                method:'POST',
+                contentType:'application/Json; charset=UTF-8',
+                data: JSON.stringify(productCreate),
+                // headers : {'Authorization': 'Bearer '+window.localStorage.getItem('TOKEN_KEY')},
+                success:function (){
+                    $('#message').show();
+                },
+                error: function (){
+                    document.getElementById('create').innerHTML = "Error "
+                }
+            })
+
+
+
+        })
+    })
+
+    function getCategory() {
+        $.ajax({
+            url: 'http://localhost:8080/api/categories',
+            method: 'GET',
+            contentType: 'application/Json;charset=UTF-8',
+            success: function (data) {
+                let categories = data.content
+                console.log(categories)
+                let name = ""
+                for (const category of categories) {
+                    name += `<option value="${category.id}">${category.name}</option>`
+                }
+                document.getElementById("categories").innerHTML = name;
+            },
+            error: function () {
+                alert('Error')
+            }
+        })
+    }
+</script>
+</html>

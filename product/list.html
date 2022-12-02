@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Products List</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.1/jquery.min.js"
+            integrity="sha512-aVKKRRi/Q/YV+4mjoKBsE4x3H+BkegoM/em46NNlCqNTmUYADjBbeNefNxYV7giUp0VxICtqdrbqU7iVaeZNXA=="
+            crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.1/jquery.min.js"></script>
+</head>
+<body>
+<h1>LIST PRODUCTS</h1>
+<a href="create.html">
+    <button>Create</button>
+</a>
+<br>
+<table id="container" border="1">
+    <thead>
+    <tr>
+        <th>ID</th>
+        <th>NAME</th>
+        <th>PRICE</th>
+        <th>DESCRIPTION</th>
+        <th>MANUFACTURER</th>
+        <th>IMAGE</th>
+        <th>EDIT</th>
+        <th>DELETE</th>
+    </tr>
+    </thead>
+    <tbody id="tbody">
+
+    </tbody>
+
+</table>
+<div id="page">
+</div>
+</body>
+
+<script>
+    let url = 'http://localhost:8080/api/products?page=';
+    let page = 0;
+
+    $(document).ready(function (){
+        getProduct();
+    })
+
+    function getProduct(){
+        $.ajax({
+            url:url+page,
+            headers : {'Authorization': 'Bearer'+window.localStorage.getItem('TOKEN_KEY')},
+            method : 'GET',
+            contentType: 'application/Json;charset=UTF-8',
+            success : function (data){
+                //ve bang du lieu
+                let products = data.content
+                console.log(products)
+                let tbody = $('#tbody');
+                // lam trong truoc khi goi lai bang
+                $('#tbody').empty();
+                for (let i = 0; i < products.length; i++) {
+                    let pr = products[i];
+                    tbody.append(`
+                    <tr>
+                    <td>${pr.id}</td>
+                    <td>${pr.name}</td>
+                    <td>${pr.price}</td>
+                    <td>${pr.description}</td>
+                    <td>${pr.manufacture}</td>
+                    <td>${pr.image}</td>
+                    <td><a href="edit.html?id=${pr.id}"><button>edit</button></a></td>
+                    <td><a href="delete.html?id=${pr.id}"><button>delete</button></a></td>
+                    </tr>
+                    `
+                    )
+                }
+                //truoc khi ve phan trang lam troong
+                $('#page').empty();
+                //ve phan trang
+                if (!data.first){
+                    $('#page').append(`<button onclick="previousPage()">Previous</button>`)
+                }
+                //so trang hien tai tren tong so trang
+                $('#page').append(`
+                ${ data.number + 1} / ${data.totalPages}
+                `)
+                if (!data.last){
+                    $('#page').append(`<button onclick="nextPage()">Next</button>`)
+                }
+            },
+            error : function (){
+                alert('Error')
+            }
+        })
+    }
+    function nextPage() {
+        page++;
+        getProduct();
+    }
+
+    function previousPage() {
+        page--;
+        getProduct()
+
+    }
+</script>
+</html>

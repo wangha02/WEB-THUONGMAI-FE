@@ -1,0 +1,225 @@
+<!--<!DOCTYPE html>-->
+<!--<html lang="en">-->
+<!--<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>-->
+<!--<head>-->
+<!--    <meta charset="UTF-8">-->
+<!--    <title>Title</title>-->
+<!--    <script src="nav-foot/include.js"></script>-->
+<!--</head>-->
+<!--<body>-->
+<!--<div id="nav-bar"></div>-->
+<!--<h1>Home</h1>-->
+<!--<div id="footer"></div>-->
+<!--</body>-->
+<!--</html>-->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no"/>
+  <meta name="description" content=""/>
+  <meta name="author" content=""/>
+  <title>Shop Homepage</title>
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+  <!-- Favicon-->
+  <link rel="icon" type="image/x-icon" href="assets/favicon.ico"/>
+  <!-- Bootstrap icons-->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.5.0/font/bootstrap-icons.css" rel="stylesheet"/>
+  <!-- Core theme CSS (includes Bootstrap)-->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.9.1/font/bootstrap-icons.css">
+  <link rel="stylesheet" href="../../css/styles.css">
+</head>
+<body>
+<!-- Navigation-->
+<nav class="navbar navbar-expand-lg navbar-light bg-light">
+  <div class="container px-4 px-lg-5">
+    <a class="navbar-brand" href="#!">THREE PHONE SHOP</a>
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation"><span
+            class="navbar-toggler-icon"></span></button>
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav me-auto mb-2 mb-lg-0 ms-lg-4">
+        <li class="nav-item dropdown">
+          <div class="dropdown">
+            <button class="btn dropdown-toggle" type="button" id="dropdownMenuButton1"
+                    data-bs-toggle="dropdown" aria-expanded="false">
+              Category
+            </button>
+            <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton1" id="tbody1">
+
+            </ul>
+          </div>
+        </li>
+      </ul>
+      <div class="d-flex">
+        <button class="btn btn-outline-dark" type="submit">
+          <i class="bi-cart-fill me-1"></i>
+          Cart
+          <span class="badge bg-dark text-white ms-1 rounded-pill" id="number"></span>
+        </button>
+      </div>
+    </div>
+  </div>
+  <a href="profile/profile.html">
+    <button class="btn btn-outline-dark" type="submit">
+      <b>Profile</b>
+    </button>
+  </a>
+</nav>
+<!-- Header-->
+<header>
+  <div>
+    <img style="width: 1349px;height: 350px" src="/file/three.gif">
+  </div>
+</header>
+<!-- Section-->
+<section class="py-5">
+  <div class="container px-4 px-lg-5 mt-5">
+    <div class="row gx-4 gx-lg-5 row-cols-2 row-cols-md-3 row-cols-xl-4 justify-content-center" id="tbody">
+    </div>
+    </table>
+    <div id="page" style="text-align: center">
+    </div>
+  </div>
+</section>
+<!-- Footer-->
+<footer class="py-5 bg-dark">
+  <div class="container"><p class="m-0 text-center text-white">Design by &copy; Yuu Website 2022</p></div>
+</footer>
+<!-- Bootstrap core JS-->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+<!-- Core theme JS-->
+<script src="js/scripts.js"></script>
+<script>
+  let url = 'http://localhost:8080/api/products?page=';
+  let page = 0;
+
+  $(document).ready(function () {
+    getProduct();
+    getCategory();
+    // addItems();
+
+  })
+
+  function getProduct() {
+    $.ajax({
+      url: url + page,
+      method: 'GET',
+      contentType: 'application/Json;charset=UTF-8',
+      success: function (data) {
+        //ve bang du lieu
+        let products = data.content
+        console.log(products)
+        let tbody = $('#tbody');
+        // lam trong truocs khi goi lai bang
+        $('#tbody').empty();
+        for (let i = 0; i < products.length; i++) {
+          let pr = products[i];
+          tbody.append(`
+            <div class="col mb-5">
+                <div class="card h-100">
+                    <!-- Product image-->
+                    <img class="card-img-top" src="${pr.image}" alt="..." />
+                    <!-- Product details-->
+                    <div class="card-body p-4">
+                        <div class="text-center">
+                            <!-- Product name-->
+                            <h5 class="fw-bolder">${pr.name}</h5>
+                            <!-- Product price-->
+                            ${pr.price}VND
+                        </div>
+                    </div>
+                    <!-- Product actions-->
+                    <div class="card-footer p-4 pt-0 border-top-0 bg-transparent">
+                        <div class="text-center"><a class="btn btn-outline-dark mt-auto" href="">View options</a></div>
+                        <div class="text-center"><button type="submit" onclick="addItems(${pr.id})">Add Cart</button></div>
+                    </div>
+                </div>
+            </div>
+                    `
+          )
+        }
+        //truoc khi ve phan trang lam troong
+        $('#page').empty();
+        //ve phan trang
+        if (!data.first) {
+          $('#page').append(`<button onclick="previousPage()">Previous</button>`)
+        }
+        //so trang hien tai tren tong so trang
+        $('#page').append(`
+                ${data.number + 1} / ${data.totalPages}
+                `)
+        if (!data.last) {
+          $('#page').append(`<button onclick="nextPage()">Next</button>`)
+        }
+      },
+      error: function () {
+        alert('Error')
+      }
+    })
+  }
+
+  function nextPage() {
+    page++;
+    getProduct();
+  }
+
+  function previousPage() {
+    page--;
+    getProduct()
+
+  }
+
+  let url1 = 'https://threephoneshop.herokuapp.com/api/categories';
+
+  function getCategory() {
+    $.ajax({
+      url: url1,
+      method: 'GET',
+      contentType: 'application/Json;charset=UTF-8',
+      success: function (data) {
+        let categories = data.content
+        console.log(categories)
+        let name = ""
+        for (const category of categories) {
+          name += `<li style="text-align: center"><a className="dropdown-item" href="${category.id}">${category.name}</a></li>`
+        }
+        document.getElementById("tbody1").innerHTML = name;
+      },
+      error: function () {
+        alert('Error')
+      }
+    })
+  }
+
+  function addItems(id) {
+    // let id = document.getElementById('add').value;
+    console.log('id ---> ', id)
+    let items = {};
+    let product = {};
+    product.id = id;
+    console.log(product)
+    let arrProduct = [];
+    arrProduct.push(product);
+    items.products = arrProduct;
+    console.log(items)
+    let itemsOBJ = JSON.stringify(items);
+    console.log('item --> ', itemsOBJ)
+    $.ajax({
+      url: 'http://localhost:8080/api/oder/addItems',
+      headers: {'Authorization': 'Bearer' + window.localStorage.getItem('TOKEN_KEY')},
+      method: 'POST',
+      contentType: 'application/json;charset=UTF-8',
+      data: itemsOBJ,
+      success: function (data) {
+        console.log('xuong success ====> ', data)
+      }
+    })
+
+  }
+
+</script>
+</body>
+</html>
+
+

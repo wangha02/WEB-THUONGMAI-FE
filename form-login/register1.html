@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Register</title>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.10.18/css/jquery.dataTables.css"/>
+    <script type="text/javascript" src="https://cdn.datatables.net/1.10.18/js/jquery.dataTables.js"></script>
+    <link rel="stylesheet" type="text/css" href="slide navbar style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Jost:wght@500&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="../css/register.css">
+</head>
+<body>
+<div class="main">
+    <input type="checkbox" id="chk" aria-hidden="true">
+
+    <div class="signup">
+        <label for="chk" aria-hidden="true">Sign up</label>
+        <input type="text" id="name" placeholder="Name" required="">
+        <input type="text" id="usernamea" placeholder="Username" required="">
+        <input type="email" id="email" placeholder="Email" required="">
+        <input type="password" id="passworda" placeholder="Password" required="">
+        <button type="submit" id="btn-signup">Sign up</button>
+        <span id="status" style="color: red"></span>
+    </div>
+
+    <div class="login">
+        <label for="chk" aria-hidden="true">Login</label>
+        <input type="text" id="username" placeholder="Username" required="">
+        <input type="password" id="password" placeholder="Password" required="">
+        <button type="submit" id="btn-login">Login</button>
+        <br>
+        <span id="status_login" style="color: red" ></span>
+    </div>
+</div>
+<script type = "text/javascript">
+    $(document).ready(function () {
+        let signInform = {};
+        let signUpForm = {};
+        let noUser = {
+            message: "no_user"
+        }
+        let noEmail = {
+            message: "no_email"
+        }
+        let createSuccess = {
+            message: "yes"
+        }
+        $('#btn-login').click(function () {
+            signInform.username = $('#username').val();
+            console.log('producer', signInform.username)
+            signInform.password = $('#password').val();
+            console.log('producer', signInform.password)
+            console.log('signInForm -->',signInform)
+            let signInFormObj = JSON.stringify(signInform);
+            console.log('signInFormObj == ', signInFormObj)
+            $.ajax({
+                url: 'http://localhost:8080/api/auth/signin',
+                async: false,
+                method: 'POST',
+                data: signInFormObj,
+                contentType: 'application/json; charset=utf8',
+                success: function (data) {
+                    console.log('jwtResponse--->', data)
+                    console.log('jwtResponse- status-->', data.status)
+                    if(data.status == 202){
+                        document.getElementById('status_login').innerHTML = 'Login Failed! Please try again or sign up!';
+                        return
+                    }
+                    window.sessionStorage.setItem('TOKEN_KEY',data.token);
+                    window.sessionStorage.setItem('NAME_KEY', data.name);
+                    window.sessionStorage.setItem('AVATAR_KEY',data.avatar);
+                    window.sessionStorage.setItem('ROLE_KEY',JSON.stringify(data.roles));
+                    window.location.href = '';
+                },
+                error: function (error) {
+                    // console.log('error',error)
+                    // alert(error);
+                }
+            })
+        })
+        $('#btn-signup').click(function () {
+            signUpForm.name = $('#name').val();
+            signUpForm.username = $('#usernamea').val();
+            signUpForm.email = $('#email').val();
+            signUpForm.password =$('#passworda').val();
+            signUpForm.roles = ["user"];
+            let signUpFormObj = JSON.stringify(signUpForm);
+            console.log('signUpFormObj---->',signUpFormObj)
+            $.ajax({
+                url: 'https://threephoneshop.herokuapp.com/api/auth/signup',
+                method: 'POST',
+                contentType: 'application/json; charset=uft8',
+                data: signUpFormObj,
+                success: function (data) {
+                    console.log('data ===', data);
+                    if(JSON.stringify(data)==JSON.stringify(noUser)){
+                        document.getElementById('status').innerHTML = 'The username is existed! Please try again!'
+                    }
+                    if(JSON.stringify(data)==JSON.stringify(noEmail)){
+                        document.getElementById('status').innerHTML = 'The Email is existed! Please try again!'
+                    }
+                    if(JSON.stringify(data)==JSON.stringify(createSuccess)){
+                        document.getElementById('status').innerHTML = 'Create User Account Success! Login Please!'
+                    }
+                }
+            })
+        })
+    })
+</script>
+
+</body>
+</html>

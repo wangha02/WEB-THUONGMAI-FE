@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+<script src="https://www.gstatic.com/firebasejs/4.2.0/firebase.js"></script>
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+
+</head>
+<body>
+<h1>Change avatar</h1>
+<span style="color: red" id="validate"></span>
+<input type="file" value="upload" accept=".mp4" id="fileButton">
+<div id="imgDiv"></div>
+<button class="btn btn-success" type="submit" id="change_avatar">Change Avatar</button>
+<a href="../index.html">Back Home</a>
+<script>
+    $(document).ready(function () {
+        let changeAvatar = {};
+        $('#change_avatar').click(function () {
+            let avatar = resultImage();
+            if(avatar===null||avatar.trim()===""){
+                document.getElementById('validate').innerHTML = 'Please upload file';
+                return
+            } else {
+                document.getElementById('validate').innerHTML = '';
+            }
+            changeAvatar.avatar = avatar;
+            $.ajax({
+                url: 'http://localhost:8080/api/auth/change/avatar',
+                method: 'PUT',
+                data: JSON.stringify(changeAvatar),
+                contentType: 'application/json; charset=UTF8',
+                headers : {'Authorization': 'Bearer'+window.localStorage.getItem('TOKEN_KEY')},
+                success: function (data) {
+                    console.log('data upload ---> ', data)
+                    document.getElementById('validate').innerHTML = 'Update Avatar success!'
+                    window.localStorage.removeItem('AVATAR_KEY');
+                    window.localStorage.setItem('AVATAR_KEY', avatar);
+                }
+            })
+        })
+    })
+</script>
+</body>
+<script src="../upload-file/upload-avatar.js"></script>
+</html>

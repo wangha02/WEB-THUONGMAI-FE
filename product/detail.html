@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Detail Product</title>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.1/jquery.min.js"
+          integrity="sha512-aVKKRRi/Q/YV+4mjoKBsE4x3H+BkegoM/em46NNlCqNTmUYADjBbeNefNxYV7giUp0VxICtqdrbqU7iVaeZNXA=="
+          crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.1/jquery.min.js"></script>
+  <link rel="stylesheet" href="detail.css">
+</head>
+<body>
+<section class="product">
+  <div class="product__photo">
+    <div class="photo-container">
+      <div class="photo-main">
+        <div class="controls">
+        </div>
+        <img style="border-radius: 25px" src="" id="hinh" alt="green apple slice">
+      </div>
+      <div class="photo-album">
+      </div>
+    </div>
+  </div>
+  <div class="product__info">
+    <div class="title">
+      <h1 id="name"></h1>
+      <span>Available Quantity</span>
+      <span id="quantity"></span>
+    </div>
+    <div class="price">
+       <span id="price"></span> VND
+    </div>
+    <div class="description" >
+      <h3>Description</h3>
+      <p id="desc"></p>
+    </div>
+    <div class="variant">
+      <h3> Manufacture</h3>
+      <p id="manuf"></p>
+    </div>
+    <button class="buy--btn" id="" onclick="addItems()">ADD TO CART</button>
+  </div>
+</section>
+<script>
+  let query = window.location.search;
+  let id = new URLSearchParams(query).get("id");
+$(document).ready(function (){
+  getProduct();
+  addItems();
+
+})
+function getProduct(){
+  $.ajax({
+    url:'http://localhost:8080/api/products/'+id,
+    method:'GET',
+    contentType:'application/Json; charset=UTF-8',
+    success: function (data){
+      console.log(data)
+      document.getElementById("name").innerHTML = data.name,
+      document.getElementById("hinh").src = data.image
+      document.getElementById("price").innerHTML = data.price
+      document.getElementById("manuf").innerHTML = data.manufacture
+      document.getElementById("desc").innerHTML = data.description
+      document.getElementById("quantity").innerHTML = data.availableQuantity
+    },
+    error: function (){
+      document.getElementById('edit').innerHTML = "Product does not exist!!";
+    }
+  })
+}
+  function addItems() {
+    console.log('id ---> ', id)
+    let items = {};
+    let product = {};
+    product.id = id;
+    console.log(product)
+    let arrProduct = [];
+    arrProduct.push(product);
+    items.products = arrProduct;
+    console.log(items)
+    let itemsOBJ = JSON.stringify(items);
+    console.log('item --> ', itemsOBJ)
+    $.ajax({
+      url: 'http://localhost:8080/api/oder/addItems',
+      headers: {'Authorization': 'Bearer' + window.localStorage.getItem('TOKEN_KEY')},
+      method: 'POST',
+      contentType: 'application/json;charset=UTF-8',
+      data: itemsOBJ,
+      success: function (data) {
+        console.log('xuong success ====> ', data)
+      }
+    })
+
+  }
+</script>
+</body>
+</html>

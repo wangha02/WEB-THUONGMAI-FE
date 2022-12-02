@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.1/jquery.min.js" integrity="sha512-aVKKRRi/Q/YV+4mjoKBsE4x3H+BkegoM/em46NNlCqNTmUYADjBbeNefNxYV7giUp0VxICtqdrbqU7iVaeZNXA==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+</head>
+<body>
+<h2>DELETE PRODUCT</h2>
+<p id="message" style="color: red;display: none">Delete success!</p>
+<span>
+    <h3>Ban co chac chan muon xoa ?</h3>
+    <td><a href="list.html"><button>Back</button></a></td>
+    <button onclick="deleteProduct()">Delete</button>
+
+
+</span>
+
+
+<table>
+    <tr>
+        <td>ID</td>
+        <td><input type="number" id="id" DISABLED></td>
+    </tr>
+
+    <tr>
+        <td>Name</td>
+        <td><input type="text" id="name" DISABLED></td>
+    </tr>
+    <tr>
+        <td>Price</td>
+        <td><input type="number" id="price" DISABLED></td>
+    </tr>
+    <tr>
+        <td>Description</td>
+        <td><input type="text" id="desc" DISABLED></td>
+    </tr>
+    <tr>
+        <td>Manufacturer</td>
+        <td><input type="text" id="manuf" DISABLED></td>
+    </tr>
+    <tr>
+        <td>Image</td>
+        <td><input type="text" id="img" DISABLED></td>
+    </tr>
+
+</table>
+
+<script>
+    let query = window.location.search;
+    let id = new URLSearchParams(query).get("id");
+    console.log(id)
+    $(document).ready(function (){
+        getProduct()
+    })
+    function getProduct(){
+        $.ajax({
+            url:'https://threephoneshop.herokuapp.com/api/products/'+id,
+            method:'GET',
+            contentType:'application/Json; charset=UTF-8',
+            success: function (data){
+                $('#id').val(data.id)
+                $('#name').val(data.name)
+                $('#price').val(data.price)
+                $('#desc').val(data.description)
+                $('#manuf').val(data.manufacture)
+                $('#img').val(data.image)
+
+            },
+            error: function (){
+                document.getElementById('delete').innerHTML = "Product does not exist!!";
+            }
+        })
+    }
+    function deleteProduct() {
+        let product = {
+            id: $('#id').val(),
+            name: $('#name').val(),
+            price: $('#price').val(),
+            description: $('#desc').val(),
+            manufacturer: $('#manuf').val(),
+            idCategory: $('#category').val()
+        }
+        $.ajax({
+            url:'http://localhost:8080/api/products/'+id,
+            method:'DELETE',
+            data: JSON.stringify(product),
+            contentType:'application/Json; charset=UTF-8',
+            success:function country(){
+                $('#message').show();
+
+            },
+            error: function (){
+                alert('Error')
+            }
+        })
+    }
+</script>
+</body>
+</html>

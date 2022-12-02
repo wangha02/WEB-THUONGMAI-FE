@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Edit</title>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.1/jquery.min.js" integrity="sha512-aVKKRRi/Q/YV+4mjoKBsE4x3H+BkegoM/em46NNlCqNTmUYADjBbeNefNxYV7giUp0VxICtqdrbqU7iVaeZNXA==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+
+</head>
+<body>
+<h2>EDIT PRODUCT</h2>
+<a href="list.html"><button>Back</button></a>
+<p id="message" style="color: blue;display: none">Edit success!</p>
+
+
+<table>
+    <tr>
+        <td>Name</td>
+        <td><input type="text" id="name"></td>
+    </tr>
+    <tr>
+        <td>Price</td>
+        <td><input type="number" id="price"></td>
+    </tr>
+    <tr>
+        <td>Description</td>
+        <td><input type="text" id="desc"></td>
+    </tr>
+    <tr>
+        <td>Manufacturer</td>
+        <td><input type="text" id="manuf"></td>
+    </tr>
+    <tr>
+        <td>Image</td>
+        <td><input type="text" id="img"></td>
+    </tr>
+
+        <td colspan="2" align="center">
+            <button onclick="editProduct()">Edit</button></td>
+    </tr>
+</table>
+
+
+</body>
+<script>
+    let query = window.location.search;
+    let id = new URLSearchParams(query).get("id");
+    $(document).ready(function (){
+        getProduct();
+
+
+    })
+    function getProduct(){
+        $.ajax({
+            url:'https://threephoneshop.herokuapp.com/api/products/'+id,
+            method:'GET',
+            contentType:'application/Json; charset=UTF-8',
+            success: function (data){
+                $('#name').val(data.name);
+                $('#price').val(data.price);
+                $('#desc').val(data.description);
+                $('#manuf').val(data.manufacture);
+                $('#img').val(data.image);
+
+
+            },
+            error: function (){
+                document.getElementById('edit').innerHTML = "Product does not exist!!";
+            }
+        })
+    }
+    function editProduct(){
+        let product = {
+            name: $('#name').val(),
+            price: $('#price').val(),
+            description: $('#desc').val(),
+            manufacture: $('#manuf').val(),
+            idCategory: $('#category').val()
+        }
+        $.ajax({
+            url:'http://localhost:8080/api/products/'+id,
+            method: 'PUT',
+            data:JSON.stringify(product),
+            contentType:'application/Json; charset=UTF-8',
+            success: function (){
+                $('#message').show();
+
+            },
+            error : function (){
+                alert('Error')
+            }
+        })
+    }
+</script>
+</html>
